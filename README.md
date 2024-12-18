@@ -27,6 +27,7 @@
   - [Classes](#classes)
 - [Contributing](#contributing)
 - [License](#license)
+- [Automated Build Process](#automated-build-process)
 
 ## Features
 
@@ -142,3 +143,9 @@ Contributions are welcome! Please read the [contributing guidelines](CONTRIBUTIN
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Automated Build Process
+
+This project uses GitHub Actions to automate the build process. The workflow is triggered on push and pull request events to the `main` branch. The workflow sets up a C++ environment, installs CMake, and builds the project using the `CMakeLists.txt` file.
+
+You can view the build status in the GitHub repository under the "Actions" tab. The build status for each commit and pull request will be displayed there.
