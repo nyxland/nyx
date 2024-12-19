@@ -59,19 +59,40 @@ int main(int argc, char* argv[]) {
     std::unordered_map<std::string, std::time_t> oldModificationTimes = getFileModificationTimes(nyxFiles);
 
     Compiler compiler;
+    bool compilationSuccessful = true;
     for (const auto& nyxFile : nyxFiles) {
-        compiler.compile(nyxFile, outputFilePath);
-    }
-
-    std::unordered_map<std::string, std::time_t> newModificationTimes = getFileModificationTimes(nyxFiles);
-
-    if (hasFileChanged(oldModificationTimes, newModificationTimes)) {
-        for (const auto& nyxFile : nyxFiles) {
+        try {
             compiler.compile(nyxFile, outputFilePath);
+        } catch (const std::exception& e) {
+            std::cerr << "Compilation error: " << e.what() << std::endl;
+            compilationSuccessful = false;
+            break;
         }
     }
 
-    std::system(outputFilePath.c_str());
+    if (compilationSuccessful) {
+        std::unordered_map<std::string, std::time_t> newModificationTimes = getFileModificationTimes(nyxFiles);
+
+        if (hasFileChanged(oldModificationTimes, newModificationTimes)) {
+            for (const auto& nyxFile : nyxFiles) {
+                try {
+                    compiler.compile(nyxFile, outputFilePath);
+                } catch (const std::exception& e) {
+                    std::cerr << "Compilation error: " << e.what() << std::endl;
+                    compilationSuccessful = false;
+                    break;
+                }
+            }
+        }
+
+        if (compilationSuccessful) {
+            std::system(outputFilePath.c_str());
+        } else {
+            std::cerr << "Compilation failed. Not running the executable." << std::endl;
+        }
+    } else {
+        std::cerr << "Compilation failed. Not running the executable." << std::endl;
+    }
 
     return 0;
 }
