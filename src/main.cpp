@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 
     std::string sourceDirectory = argv[1];
     std::string buildDirectory = "build";
-    std::string outputFilePath = buildDirectory + "/project.exe";
+    fs::path outputFilePath = fs::path(buildDirectory) / "project.exe";
 
     if (!fs::exists(buildDirectory)) {
         fs::create_directory(buildDirectory);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     bool compilationSuccessful = true;
     for (const auto& nyxFile : nyxFiles) {
         try {
-            compiler.compile(nyxFile, outputFilePath);
+            compiler.compile(nyxFile, outputFilePath.string());
         } catch (const std::exception& e) {
             std::cerr << "Compilation error: " << e.what() << std::endl;
             compilationSuccessful = false;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         if (hasFileChanged(oldModificationTimes, newModificationTimes)) {
             for (const auto& nyxFile : nyxFiles) {
                 try {
-                    compiler.compile(nyxFile, outputFilePath);
+                    compiler.compile(nyxFile, outputFilePath.string());
                 } catch (const std::exception& e) {
                     std::cerr << "Compilation error: " << e.what() << std::endl;
                     compilationSuccessful = false;
@@ -86,7 +86,13 @@ int main(int argc, char* argv[]) {
         }
 
         if (compilationSuccessful) {
-            std::system(outputFilePath.c_str());
+            #if defined(_WIN32) || defined(_WIN64)
+                std::system(("\"" + outputFilePath.string() + "\"").c_str());
+            #elif defined(__APPLE__) || defined(__MACH__) || defined(__linux__)
+                std::system(("./" + outputFilePath.string()).c_str());
+            #else
+                std::cerr << "Unsupported OS. Cannot run the executable." << std::endl;
+            #endif
         } else {
             std::cerr << "Compilation failed. Not running the executable." << std::endl;
         }
