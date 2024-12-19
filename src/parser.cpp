@@ -127,7 +127,9 @@ ASTNode* Parser::parsePrintStatement() {
 
 ASTNode* Parser::parseExpressionStatement() {
     ASTNode* expr = parseExpression();
-    consume(TokenType::SEMICOLON, "Expected ';' after expression");
+    if (match(TokenType::SEMICOLON)) {
+        consume(TokenType::SEMICOLON, "Expected ';' after expression");
+    }
     return new ExpressionStatementNode(expr);
 }
 
@@ -200,6 +202,9 @@ ASTNode* Parser::parseUnary() {
 
 ASTNode* Parser::parsePrimary() {
     if (match(TokenType::NUMBER)) {
+        return new LiteralNode(previous().literal);
+    }
+    if (match(TokenType::STRING)) {
         return new LiteralNode(previous().literal);
     }
     if (match(TokenType::IDENTIFIER)) {

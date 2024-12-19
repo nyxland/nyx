@@ -15,6 +15,8 @@ std::vector<Token> Lexer::tokenize() {
             tokens.push_back(tokenizeIdentifier());
         } else if (std::isdigit(currentChar)) {
             tokens.push_back(tokenizeNumber());
+        } else if (currentChar == '"') {
+            tokens.push_back(tokenizeString());
         } else {
             switch (currentChar) {
                 case '+':
@@ -84,6 +86,17 @@ Token Lexer::tokenizeNumber() {
     }
     std::string number = source.substr(start, position - start);
     return Token(TokenType::NUMBER, number);
+}
+
+Token Lexer::tokenizeString() {
+    size_t start = position + 1;
+    position++;
+    while (position < source.length() && source[position] != '"') {
+        position++;
+    }
+    std::string str = source.substr(start, position - start);
+    position++;
+    return Token(TokenType::STRING, str);
 }
 
 const std::unordered_map<std::string, TokenType> Lexer::keywords = {
