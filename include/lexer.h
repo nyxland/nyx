@@ -17,6 +17,7 @@ private:
 
     Token tokenizeIdentifier();
     Token tokenizeNumber();
+    Token tokenizeString(); // P3087
 
     static const std::unordered_map<std::string, TokenType> keywords;
 };
