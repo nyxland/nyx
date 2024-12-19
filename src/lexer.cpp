@@ -49,6 +49,9 @@ std::vector<Token> Lexer::tokenize() {
                 case ':':
                     tokens.push_back(Token(TokenType::COLON, ":"));
                     break;
+                case ';':
+                    tokens.push_back(Token(TokenType::SEMICOLON, ";"));
+                    break;
                 case ',':
                     tokens.push_back(Token(TokenType::COMMA, ","));
                     break;
