@@ -10,6 +10,7 @@ enum class TokenType {
     NUMBER,
     PLUS,
     MINUS,
+    STRING,
     STAR,
     SLASH,
     SEMICOLON,
