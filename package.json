@@ -2,6 +2,9 @@
   "name": "nyx",
   "version": "1.0.0",
   "main": "dist/main.js",
+  "bin": {
+    "nyx": "./bin/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
@@ -12,8 +15,5 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2"
-  },
-  "bin": {
-    "nyx": "./bin/cli.js"
   }
 }

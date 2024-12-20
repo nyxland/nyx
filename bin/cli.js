@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { main } = require('../src/main');
+const fs = require('node:fs');
+const path = require('node:path');
+const { main } = require('../build/main');
 
 const args = process.argv.slice(2);
 
