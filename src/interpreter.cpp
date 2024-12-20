@@ -94,6 +94,7 @@ void Interpreter::executeClassDeclaration(ClassDeclarationNode* node) {
 
 void Interpreter::executePrintStatement(PrintStatementNode* node) {
     executeNode(node->value);
+    std::cout << std::endl;
 }
 
 void Interpreter::executeExpressionStatement(ExpressionStatementNode* node) {
@@ -110,7 +111,7 @@ void Interpreter::executeUnaryExpression(UnaryExpressionNode* node) {
 }
 
 void Interpreter::executeLiteral(LiteralNode* node) {
-    std::cout << node->value << std::endl;
+    std::cout << node->value;
 }
 
 void Interpreter::executeVariable(VariableNode* node) {
