@@ -20,14 +20,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4.2.2
 
-    - name: Setup Cpp (C++ / C)
-      uses: aminya/setup-cpp@v0.44.0
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
 
-    - name: Install CMake
-      run: sudo apt-get install cmake
+    - name: Install PNPM
+      run: npm install --global pnpm
 
-    - name: Configure CMake
-      run: cmake -S . -B build
+    - name: Install dependencies
+      run: pnpm install
 
     - name: Build
-      run: cmake --build build
+      run: pnpm build
+
+    - name: Run tests
+      run: pnpm test

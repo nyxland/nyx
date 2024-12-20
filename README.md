@@ -39,8 +39,8 @@
 
 ### Prerequisites
 
-- C++ compiler (e.g., GCC, Clang, MSVC)
-- CMake (version 3.10 or higher)
+- Node.js (version 20 or higher)
+- pnpm (version 8 or higher)
 
 ### Building Nyx
 
@@ -51,31 +51,24 @@
    cd nyx
    ```
 
-2. Create a build directory and navigate to it:
+2. Install dependencies:
 
    ```sh
-   mkdir build
-   cd build
+   pnpm install
    ```
 
-3. Run CMake to configure the project:
+3. Build the project:
 
    ```sh
-   cmake ..
-   ```
-
-4. Build the project:
-
-   ```sh
-   cmake --build .
+   pnpm build
    ```
 
 ### Running Nyx Code
 
-To run Nyx code, use the `nyx` executable generated in the build process. The `nyx` executable takes a Nyx source file as input and interprets it directly.
+To run Nyx code, use the `nyx` script. The `nyx` script takes a Nyx source file as input and interprets it directly.
 
 ```sh
-./nyx path/to/your_code.nyx
+node dist/main.js path/to/your_code.nyx
 ```
 
 This will interpret and execute the Nyx code in the specified file.
@@ -85,7 +78,7 @@ This will interpret and execute the Nyx code in the specified file.
 To run a Nyx source file, use the following command:
 
 ```sh
-./nyx example/index.nyx
+node dist/main.js example/index.nyx
 ```
 
 This will interpret and execute the Nyx code in the `example/index.nyx` file.
@@ -150,6 +143,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Automated Build Process
 
-This project uses GitHub Actions to automate the build process. The workflow is triggered on push and pull request events to the `main` branch. The workflow sets up a C++ environment, installs CMake, and builds the project using the `CMakeLists.txt` file.
+This project uses GitHub Actions to automate the build process. The workflow is triggered on push and pull request events to the `main` branch. The workflow sets up a Node.js environment, installs dependencies, and builds the project using the `tsconfig.json` file.
 
 You can view the build status in the GitHub repository under the "Actions" tab. The build status for each commit and pull request will be displayed there.
