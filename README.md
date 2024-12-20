@@ -104,36 +104,40 @@ const y = 20
 ### Functions
 
 ```nyx
-def add(a, b):
-    return a + b
+def add = (a, b) => {
+    return a + b;
+}
 ```
 
 ### Conditionals
 
 ```nyx
 if x > y:
-    print("x is greater than y")
+    print("x is greater than y");
 else:
-    print("x is not greater than y")
+    print("x is not greater than y");
 ```
 
 ### Loops
 
 ```nyx
-for i in range(10):
-    print(i)
+for i in range(10) {
+    print(i);
+}
 ```
 
 ### Classes
 
 ```nyx
 class Person:
-    def __init__(self, name, age):
+    def __init__ = (self, name, age) => {
         self.name = name
         self.age = age
+    }
 
-    def greet(self):
+    def greet = (self) => {
         print(f"Hello, my name is {self.name} and I am {self.age} years old")
+    }
 ```
 
 ## Contributing
