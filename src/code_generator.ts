@@ -45,7 +45,7 @@ export class CodeGenerator {
         if (!node.initializer) {
             throw new Error('Missing initializer in variable declaration');
         }
-        code += `${node.type === 'LET' ? 'let' : 'const'} ${node.name.lexeme} = `;
+        code += `${node.type.toString() === 'LET' ? 'let' : 'const'} ${node.name.lexeme} = `;
         this.generateNode(node.initializer, code);
         code += ';\n';
     }

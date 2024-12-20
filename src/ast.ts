@@ -1,3 +1,5 @@
+import { Token, TokenType } from "./lexer";
+
 export abstract class ASTNode {}
 
 export abstract class ExpressionNode extends ASTNode {}

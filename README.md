@@ -39,7 +39,7 @@
 
 ### Prerequisites
 
-- Node.js (version 20 or higher)
+- Node.js (version 22 or higher)
 - pnpm (version 8 or higher)
 
 ### Building Nyx
@@ -68,7 +68,7 @@
 To run Nyx code, use the `nyx` script. The `nyx` script takes a Nyx source file as input and interprets it directly.
 
 ```sh
-node dist/main.js path/to/your_code.nyx
+node build/main.js path/to/your_code.nyx
 ```
 
 This will interpret and execute the Nyx code in the specified file.
@@ -78,7 +78,7 @@ This will interpret and execute the Nyx code in the specified file.
 To run a Nyx source file, use the following command:
 
 ```sh
-node dist/main.js example/index.nyx
+node build/main.js example/index.nyx
 ```
 
 This will interpret and execute the Nyx code in the `example/index.nyx` file.
