@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2"
+  },
+  "bin": {
+    "nyx": "./bin/cli.js"
   }
 }
