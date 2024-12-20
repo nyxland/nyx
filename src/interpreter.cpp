@@ -30,7 +30,7 @@ void Interpreter::executeNode(ASTNode* node) {
     } else if (auto* unaryExpr = dynamic_cast<UnaryExpressionNode*>(node)) {
         executeUnaryExpression(unaryExpr);
     } else if (auto* literal = dynamic_cast<LiteralNode*>(node)) {
-        executeLiteral(literal, true); // Pe03b
+        executeLiteral(literal, true);
     } else if (auto* variable = dynamic_cast<VariableNode*>(node)) {
         executeVariable(variable);
     } else if (auto* grouping = dynamic_cast<GroupingNode*>(node)) {
@@ -94,7 +94,7 @@ void Interpreter::executeClassDeclaration(ClassDeclarationNode* node) {
 
 void Interpreter::executePrintStatement(PrintStatementNode* node) {
     if (auto* literal = dynamic_cast<LiteralNode*>(node->value)) {
-        executeLiteral(literal, true); // Pf550
+        executeLiteral(literal, true);
     } else {
         executeNode(node->value);
         std::cout << std::endl;
@@ -114,7 +114,7 @@ void Interpreter::executeUnaryExpression(UnaryExpressionNode* node) {
     executeNode(node->right);
 }
 
-void Interpreter::executeLiteral(LiteralNode* node, bool isString) { // Pe03b
+void Interpreter::executeLiteral(LiteralNode* node, bool isString) {
     if (isString) {
         std::cout << node->value;
     } else {
