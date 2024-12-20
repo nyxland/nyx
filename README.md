@@ -17,7 +17,7 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Building Nyx](#building-nyx)
-  - [Compiling Nyx Code](#compiling-nyx-code)
+  - [Running Nyx Code](#running-nyx-code)
   - [Example of Using the New CLI Interface](#example-of-using-the-new-cli-interface)
 - [Nyx Syntax](#nyx-syntax)
   - [Variables](#variables)
@@ -33,7 +33,7 @@
 
 - Combines the best features of Python and JavaScript
 - Easy-to-read syntax
-- Compiles to native executables for various operating systems
+- Interprets `.nyx` files directly without compilation
 
 ## Getting Started
 
@@ -70,25 +70,25 @@
    cmake --build .
    ```
 
-### Compiling Nyx Code
+### Running Nyx Code
 
-To compile Nyx code, use the `nyx` executable generated in the build process. The `nyx` executable takes a Nyx source file as input and generates a native executable.
+To run Nyx code, use the `nyx` executable generated in the build process. The `nyx` executable takes a Nyx source file as input and interprets it directly.
 
 ```sh
 ./nyx path/to/your_code.nyx
 ```
 
-This will generate a native executable in the `build` directory.
+This will interpret and execute the Nyx code in the specified file.
 
 ### Example of Using the New CLI Interface
 
-To compile a Nyx source file and generate a native executable, use the following command:
+To run a Nyx source file, use the following command:
 
 ```sh
 ./nyx example/index.nyx
 ```
 
-This will generate a native executable in the `build` directory with the name `index.nyx.exe`.
+This will interpret and execute the Nyx code in the `example/index.nyx` file.
 
 ## Nyx Syntax
 
