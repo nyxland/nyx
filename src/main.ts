@@ -9,6 +9,8 @@ function main(sourceCode: string): void {
     const parser = new Parser(tokens);
     const ast = parser.parse();
 
+    console.log(JSON.stringify(ast, null, 2));
+
     const interpreter = new Interpreter();
     interpreter.interpret(ast);
 }
