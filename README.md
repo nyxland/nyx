@@ -1,6 +1,6 @@
 <div align="center">
   <picture>
-      <img src="https://raw.githubusercontent.com/nyxland/assets/main/assets/logo.png" width="128">
+      <img src="https://nyxland.github.io/assets/assets/logo.png" width="128">
   </picture>
 
   # Nyx Programming Language
