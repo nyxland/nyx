@@ -93,8 +93,12 @@ void Interpreter::executeClassDeclaration(ClassDeclarationNode* node) {
 }
 
 void Interpreter::executePrintStatement(PrintStatementNode* node) {
-    executeNode(node->value);
-    std::cout << std::endl;
+    if (auto* literal = dynamic_cast<LiteralNode*>(node->value)) {
+        std::cout << literal->value << std::endl;
+    } else {
+        executeNode(node->value);
+        std::cout << std::endl;
+    }
 }
 
 void Interpreter::executeExpressionStatement(ExpressionStatementNode* node) {
