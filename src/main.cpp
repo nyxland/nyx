@@ -5,7 +5,7 @@
 #include <vector>
 #include "lexer.h"
 #include "parser.h"
-#include "code_generator.h"
+#include "interpreter.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -31,10 +31,8 @@ int main(int argc, char* argv[]) {
     Parser parser(tokens);
     ASTNode* ast = parser.parse();
 
-    CodeGenerator codeGenerator;
-    std::string interpretedCode = codeGenerator.generate(ast);
-
-    std::cout << interpretedCode << std::endl;
+    Interpreter interpreter;
+    interpreter.interpret(ast);
 
     return 0;
 }
