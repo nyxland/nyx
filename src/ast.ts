@@ -2,6 +2,12 @@ import { Token, TokenType } from "./lexer";
 
 export abstract class ASTNode {}
 
+export class ProgramNode extends ASTNode {
+    constructor(public statements: ASTNode[]) {
+        super();
+    }
+}
+
 export abstract class ExpressionNode extends ASTNode {}
 
 export abstract class StatementNode extends ASTNode {}

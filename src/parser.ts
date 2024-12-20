@@ -1,5 +1,5 @@
 import { Token, TokenType } from './lexer';
-import { ASTNode, VariableDeclarationNode, FunctionDeclarationNode, IfStatementNode, ForStatementNode, WhileStatementNode, ReturnStatementNode, ClassDeclarationNode, PrintStatementNode, ExpressionStatementNode, BinaryExpressionNode, UnaryExpressionNode, LiteralNode, VariableNode, GroupingNode, AssignmentNode } from './ast';
+import { ASTNode, VariableDeclarationNode, FunctionDeclarationNode, IfStatementNode, ForStatementNode, WhileStatementNode, ReturnStatementNode, ClassDeclarationNode, PrintStatementNode, ExpressionStatementNode, BinaryExpressionNode, UnaryExpressionNode, LiteralNode, VariableNode, GroupingNode, AssignmentNode, ProgramNode } from './ast';
 
 class Parser {
     private position: number = 0;
@@ -7,7 +7,11 @@ class Parser {
     constructor(private tokens: Token[]) {}
 
     public parse(): ASTNode {
-        return this.parseStatement();
+        const statements: ASTNode[] = [];
+        while (!this.isAtEnd()) {
+            statements.push(this.parseStatement());
+        }
+        return new ProgramNode(statements);
     }
 
     private parseStatement(): ASTNode {
@@ -120,16 +124,16 @@ class Parser {
     }
 
     private parsePrintStatement(): ASTNode {
+        this.consume(TokenType.LEFT_PAREN, "Expected '(' after 'print'");
         const value = this.parseExpression();
+        this.consume(TokenType.RIGHT_PAREN, "Expected ')' after value");
         this.consume(TokenType.SEMICOLON, "Expected ';' after value");
         return new PrintStatementNode(value);
     }
 
     private parseExpressionStatement(): ASTNode {
         const expr = this.parseExpression();
-        if (this.match(TokenType.SEMICOLON)) {
-            this.consume(TokenType.SEMICOLON, "Expected ';' after expression");
-        }
+        this.consume(TokenType.SEMICOLON, "Expected ';' after expression");
         return new ExpressionStatementNode(expr);
     }
 
