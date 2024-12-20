@@ -20,7 +20,7 @@ private:
     void executeExpressionStatement(ExpressionStatementNode* node);
     void executeBinaryExpression(BinaryExpressionNode* node);
     void executeUnaryExpression(UnaryExpressionNode* node);
-    void executeLiteral(LiteralNode* node, bool isString = false); // P3adf
+    void executeLiteral(LiteralNode* node, bool isString = false);
     void executeVariable(VariableNode* node);
     void executeGrouping(GroupingNode* node);
     void executeAssignment(AssignmentNode* node);
