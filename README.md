@@ -51,10 +51,9 @@
    cd nyx
    ```
 
-2. Create a build directory and navigate to it:
+2. Navigate to the build directory:
 
    ```sh
-   mkdir build
    cd build
    ```
 
