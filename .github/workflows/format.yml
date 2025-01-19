@@ -1,28 +1,23 @@
-name: Format code
-
-permissions:
-  contents: write
-  pull-requests: write
+name: Format Code
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
-  workflow_dispatch:
+      - main
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v2
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.0.1
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
         run: bun install
@@ -30,31 +25,12 @@ jobs:
       - name: Format code
         run: bun format
 
-      - name: Configure git
+      - name: Commit changes if any
         run: |
-          git config --global user.name "NYX Language Bot"
-          git config --global user.email "nyxlangbot@binaryblazer.me"
-
-      - name: Check for changes
-        id: changes
-        run: |
-          git diff --exit-code || echo "changes"
-
-      - name: Create Pull Request
-        if: steps.changes.outputs.changes == 'changes'
-        id: create_pull_request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.FORMAT_PAT }}
-          commit-message: "Format code with Prettier"
-          branch: format-changes
-          title: "Format code with Prettier"
-          body: "This PR formats the code with Prettier."
-          labels: "auto-merge"
-
-      - name: Enable Auto-Merge
-        if: steps.changes.outputs.changes == 'changes'
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.FORMAT_PAT }}
-          pull-request-number: ${{ steps.create_pull_request.outputs.pull-request-number }}
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          if [[ `git status --porcelain` ]]; then
+            git add .
+            git commit -m "Formatted code with Prettier"
+            git push
+          fi
