@@ -1,15 +1,16 @@
-import { Command } from 'commander';
-import { readFileSync } from 'fs';
-import { interpret } from './interpreter';
+import { Command } from "commander";
+import { readFileSync } from "node:fs";
+import process from "node:process";
+import { interpret } from "./interpreter";
 
 const program = new Command();
 
 program
-  .version('0.1.0')
-  .description('Nyx Programming Language CLI')
-  .argument('<file>', 'Nyx source file to execute')
+  .version("1.0.0-b.1")
+  .description("Nyx Programming Language CLI")
+  .argument("<file>", "Nyx source file to execute")
   .action((file) => {
-    const code = readFileSync(file, 'utf-8');
+    const code = readFileSync(file, "utf-8");
     interpret(code);
   });
 

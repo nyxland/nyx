@@ -1,10 +1,10 @@
 export enum TokenType {
-  Keyword,
-  Identifier,
-  Literal,
-  Operator,
-  Punctuation,
-  EOF,
+  Keyword = 0,
+  Identifier = 1,
+  Literal = 2,
+  Operator = 3,
+  Punctuation = 4,
+  EOF = 5,
 }
 
 export interface Token {
@@ -15,11 +15,46 @@ export interface Token {
 }
 
 const keywords = new Set([
-  'async', 'def', 'let', 'const', 'if', 'else', 'for', 'while', 'return', 'import', 'from', 'as'
+  "async",
+  "def",
+  "let",
+  "const",
+  "if",
+  "else",
+  "for",
+  "while",
+  "return",
+  "import",
+  "from",
+  "as",
 ]);
 
 const operators = new Set([
-  '=', '==', '!=', '<', '>', '<=', '>=', '+', '-', '*', '/', '&&', '||', '!', '=>', '(', ')', '{', '}', '[', ']', ',', '.', ':', ';'
+  "=",
+  "==",
+  "!=",
+  "<",
+  ">",
+  "<=",
+  ">=",
+  "+",
+  "-",
+  "*",
+  "/",
+  "&&",
+  "||",
+  "!",
+  "=>",
+  "(",
+  ")",
+  "{",
+  "}",
+  "[",
+  "]",
+  ",",
+  ".",
+  ":",
+  ";",
 ]);
 
 export class Tokenizer {
@@ -45,7 +80,7 @@ export class Tokenizer {
 
   private advance(): string {
     const char = this.source[this.position++];
-    if (char === '\n') {
+    if (char === "\n") {
       this.line++;
       this.column = 1;
     } else {
@@ -55,15 +90,19 @@ export class Tokenizer {
   }
 
   private isWhitespace(char: string): boolean {
-    return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+    return char === " " || char === "\t" || char === "\n" || char === "\r";
   }
 
   private isDigit(char: string): boolean {
-    return char >= '0' && char <= '9';
+    return char >= "0" && char <= "9";
   }
 
   private isAlpha(char: string): boolean {
-    return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char === '_';
+    return (
+      (char >= "a" && char <= "z") ||
+      (char >= "A" && char <= "Z") ||
+      char === "_"
+    );
   }
 
   private isAlphanumeric(char: string): boolean {
@@ -75,7 +114,9 @@ export class Tokenizer {
   }
 
   private error(message: string): never {
-    throw new Error(`Tokenizer error at ${this.line}:${this.column} - ${message}`);
+    throw new Error(
+      `Tokenizer error at ${this.line}:${this.column} - ${message}`,
+    );
   }
 
   public tokenize(): Token[] {
@@ -107,12 +148,12 @@ export class Tokenizer {
       this.error(`Unexpected character: ${char}`);
     }
 
-    tokens.push(this.createToken(TokenType.EOF, ''));
+    tokens.push(this.createToken(TokenType.EOF, ""));
     return tokens;
   }
 
   private tokenizeNumber(): Token {
-    let value = '';
+    let value = "";
     while (!this.isEOF() && this.isDigit(this.peek())) {
       value += this.advance();
     }
@@ -120,7 +161,7 @@ export class Tokenizer {
   }
 
   private tokenizeIdentifierOrKeyword(): Token {
-    let value = '';
+    let value = "";
     while (!this.isEOF() && this.isAlphanumeric(this.peek())) {
       value += this.advance();
     }
@@ -132,7 +173,7 @@ export class Tokenizer {
 
   private tokenizeOperator(): Token {
     let value = this.advance();
-    if (value === '=' && this.peek() === '>') {
+    if (value === "=" && this.peek() === ">") {
       value += this.advance();
     }
     return this.createToken(TokenType.Operator, value);

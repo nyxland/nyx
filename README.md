@@ -3,13 +3,13 @@
       <img src="https://nyxland.github.io/assets/assets/logo.png" width="128">
   </picture>
 
-  # Nyx Programming Language
+# Nyx Programming Language
 
-  Nyx is a new programming language that combines the syntax of Python and JavaScript. It is designed to be fast, easy to read, easy to write, resource efficient, and cross-platform compatible. Nyx compiles to native executables for various operating systems.
+Nyx is a new programming language that combines the syntax of Python and JavaScript. It is designed to be fast, easy to read, easy to write, resource efficient, and cross-platform compatible. Nyx compiles to native executables for various operating systems.
+
 </div>
 
-> [!WARNING]
-> **This project is under construction** and is not yet ready for production use. Please check back later for updates. We do not recommend using this project in its current state. This project is still in the early stages of development and is not yet ready for use. We are developing it publicly to allow for community feedback and contributions. Please check back later for updates.
+> [!WARNING] > **This project is under construction** and is not yet ready for production use. Please check back later for updates. We do not recommend using this project in its current state. This project is still in the early stages of development and is not yet ready for use. We are developing it publicly to allow for community feedback and contributions. Please check back later for updates.
 
 ## Table of Contents
 
@@ -27,7 +27,6 @@
   - [Classes](#classes)
 - [Contributing](#contributing)
 - [License](#license)
-- [Automated Build Process](#automated-build-process)
 
 ## Features
 
@@ -39,8 +38,8 @@
 
 ### Prerequisites
 
-- C++ compiler (e.g., GCC, Clang, MSVC)
-- CMake (version 3.10 or higher)
+- [Bun](https://bun.sh/docs/installation)
+- [TypeScript](https://www.typescriptlang.org/download)
 
 ### Building Nyx
 
@@ -51,30 +50,24 @@
    cd nyx
    ```
 
-2. Navigate to the build directory:
+2. Install the necessary dependencies:
 
    ```sh
-   cd build
+   bun install
    ```
 
-3. Run CMake to configure the project:
+3. Build the project using the TypeScript compiler (tsc):
 
    ```sh
-   cmake ..
-   ```
-
-4. Build the project:
-
-   ```sh
-   cmake --build .
+   bun run build
    ```
 
 ### Running Nyx Code
 
-To run Nyx code, use the `nyx` executable generated in the build process. The `nyx` executable takes a Nyx source file as input and interprets it directly.
+To run Nyx code, use the `cli` JS file generated in the build process. The `cli` JS file takes a Nyx source file as input and interprets it directly.
 
 ```sh
-./nyx path/to/your_code.nyx
+bun run dist/cli.js path/to/your_code.nyx
 ```
 
 This will interpret and execute the Nyx code in the specified file.
@@ -84,7 +77,7 @@ This will interpret and execute the Nyx code in the specified file.
 To run a Nyx source file, use the following command:
 
 ```sh
-./nyx example/index.nyx
+npx nyx example/index.nyx
 ```
 
 This will interpret and execute the Nyx code in the `example/index.nyx` file.
@@ -146,27 +139,3 @@ Contributions are welcome! Please read the [contributing guidelines](CONTRIBUTIN
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## Automated Build Process
-
-This project uses GitHub Actions to automate the build process. The workflow is triggered on push and pull request events to the `main` branch. The workflow sets up a C++ environment, installs CMake, and builds the project using the `CMakeLists.txt` file.
-
-You can view the build status in the GitHub repository under the "Actions" tab. The build status for each commit and pull request will be displayed there.
-
-## New Interpreter and CLI
-
-We have implemented a new interpreter in TypeScript to parse and execute Nyx code. The CLI interface allows you to run `.nyx` files using the `nyx` executable. Here is how you can use it:
-
-1. Install the necessary dependencies:
-
-   ```sh
-   npm install
-   ```
-
-2. Run the Nyx code using the CLI:
-
-   ```sh
-   npx nyx path/to/your_code.nyx
-   ```
-
-This will interpret and execute the Nyx code in the specified file.

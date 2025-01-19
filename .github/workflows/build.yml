@@ -17,17 +17,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
 
-    - name: Setup Cpp (C++ / C)
-      uses: aminya/setup-cpp@v0.44.0
+      - name: Setup Cpp (C++ / C)
+        uses: aminya/setup-cpp@v0.44.0
 
-    - name: Install CMake
-      run: sudo apt-get install cmake
+      - name: Install CMake
+        run: sudo apt-get install cmake
 
-    - name: Configure CMake
-      run: cmake -S . -B build
+      - name: Configure CMake
+        run: cmake -S . -B build
 
-    - name: Build
-      run: cmake --build build
+      - name: Build
+        run: cmake --build build
