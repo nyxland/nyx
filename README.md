@@ -152,3 +152,21 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 This project uses GitHub Actions to automate the build process. The workflow is triggered on push and pull request events to the `main` branch. The workflow sets up a C++ environment, installs CMake, and builds the project using the `CMakeLists.txt` file.
 
 You can view the build status in the GitHub repository under the "Actions" tab. The build status for each commit and pull request will be displayed there.
+
+## New Interpreter and CLI
+
+We have implemented a new interpreter in TypeScript to parse and execute Nyx code. The CLI interface allows you to run `.nyx` files using the `nyx` executable. Here is how you can use it:
+
+1. Install the necessary dependencies:
+
+   ```sh
+   npm install
+   ```
+
+2. Run the Nyx code using the CLI:
+
+   ```sh
+   npx nyx path/to/your_code.nyx
+   ```
+
+This will interpret and execute the Nyx code in the specified file.
