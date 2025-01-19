@@ -16,7 +16,8 @@ if (require.main === module) {
     .action((file) => {
       const code = readFileSync(file, "utf-8");
       const ast = parse(code);
-      interpret(ast);
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      interpret(ast as any);
     });
 
   program.parse(process.argv);

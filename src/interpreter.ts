@@ -1,7 +1,8 @@
 import axios from "axios";
-import { parse, Program, ASTNode, ImportDeclaration, CallExpression, Identifier, Literal } from "./ast";
+import { parse, type Program, type ASTNode, type ImportDeclaration, type CallExpression, type Identifier, type Literal } from "./ast";
 
 interface Module {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   [key: string]: any;
 }
 
@@ -19,12 +20,14 @@ const http: Module = {
 };
 
 class Interpreter {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  [key: string]: any;
   private modules: { [key: string]: Module } = {
     io,
     http,
   };
 
-  async interpret(ast: Program) {
+  async interpret(ast: ASTNode) {
     switch (ast.type) {
       case "Program":
         for (const statement of ast.body) {
@@ -32,13 +35,13 @@ class Interpreter {
         }
         break;
       case "ImportDeclaration":
-        this.handleImportDeclaration(ast);
+        this.handleImportDeclaration(ast as ImportDeclaration);
         break;
       case "FunctionDeclaration":
         // Handle function declaration
         break;
       case "CallExpression":
-        await this.handleCallExpression(ast);
+        await this.handleCallExpression(ast as CallExpression);
         break;
       case "VariableDeclaration":
         // Handle variable declaration
@@ -116,7 +119,7 @@ class Interpreter {
       case "BinaryExpression":
         return this.evaluateBinaryExpression(node);
       case "CallExpression":
-        return this.handleCallExpression(node);
+        return this.handleCallExpression(node as CallExpression);
       default:
         throw new Error(`Unknown AST node type: ${node.type}`);
     }
