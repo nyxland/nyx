@@ -1,5 +1,13 @@
 import axios from "axios";
-import { parse, type Program, type ASTNode, type ImportDeclaration, type CallExpression, type Identifier, type Literal } from "./ast";
+import {
+  parse,
+  type Program,
+  type ASTNode,
+  type ImportDeclaration,
+  type CallExpression,
+  type Identifier,
+  type Literal,
+} from "./ast";
 
 interface Module {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
