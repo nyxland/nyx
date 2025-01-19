@@ -9,7 +9,7 @@ Nyx is a new programming language that combines the syntax of Python and JavaScr
 
 </div>
 
-> [!WARNING] > **This project is under construction** and is not yet ready for production use. Please check back later for updates. We do not recommend using this project in its current state. This project is still in the early stages of development and is not yet ready for use. We are developing it publicly to allow for community feedback and contributions. Please check back later for updates.
+[!WARNING] > **This project is under construction** and is not yet ready for production use. Please check back later for updates. We do not recommend using this project in its current state. This project is still in the early stages of development and is not yet ready for use. We are developing it publicly to allow for community feedback and contributions. Please check back later for updates.
 
 ## Table of Contents
 
