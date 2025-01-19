@@ -1,4 +1,4 @@
-name: Build
+name: Build code
 
 permissions:
   contents: read
@@ -17,17 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
 
-    - name: Setup Cpp (C++ / C)
-      uses: aminya/setup-cpp@v0.44.0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
 
-    - name: Install CMake
-      run: sudo apt-get install cmake
+      - name: Install dependencies
+        run: bun install
 
-    - name: Configure CMake
-      run: cmake -S . -B build
-
-    - name: Build
-      run: cmake --build build
+      - name: Build code
+        run: bun run build

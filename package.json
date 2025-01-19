@@ -1,0 +1,40 @@
+{
+  "name": "nyx",
+  "version": "1.0.0-b.1",
+  "description": "Combines the best of Python and JavaScript while remaining fast, stable, resource efficient and reliable. Allowing users to build anything.",
+  "bin": {
+    "nyx": "dist/cli.js"
+  },
+  "author": {
+    "name": "Jonas F. Franke",
+    "email": "me@binaryblazer.me",
+    "url": "https://binaryblazer.me"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nyx",
+    "python",
+    "javascript",
+    "typescript",
+    "fast",
+    "stable",
+    "resource efficient",
+    "reliable"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/bun": "^1.1.17",
+    "@types/node": "^22.10.7",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "commander": "^13.0.0"
+  }
+}

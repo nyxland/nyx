@@ -12,19 +12,19 @@ nationality, personal appearance, race, religion, or sexual identity and orienta
 
 Examples of behavior that contributes to a positive environment:
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+- Using welcoming and inclusive language
+- Being respectful of differing viewpoints and experiences
+- Gracefully accepting constructive criticism
+- Focusing on what is best for the community
+- Showing empathy towards other community members
 
 Examples of unacceptable behavior:
 
-* The use of sexualized language or imagery
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information without explicit permission
-* Other conduct which could reasonably be considered inappropriate
+- The use of sexualized language or imagery
+- Trolling, insulting/derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information without explicit permission
+- Other conduct which could reasonably be considered inappropriate
 
 ## Enforcement Responsibilities
 
@@ -49,20 +49,23 @@ Project maintainers will respect privacy and confidentiality requests.
 ## Enforcement Guidelines
 
 1. **Correction**
-   * First instance: Private warning
-   * Action: Explain why the behavior was inappropriate
+
+   - First instance: Private warning
+   - Action: Explain why the behavior was inappropriate
 
 2. **Warning**
-   * Second instance: Written warning
-   * Action: Consequences for continued behavior
+
+   - Second instance: Written warning
+   - Action: Consequences for continued behavior
 
 3. **Temporary Ban**
-   * Third instance: Temporary ban
-   * Action: Temporary ban from any sort of interaction
+
+   - Third instance: Temporary ban
+   - Action: Temporary ban from any sort of interaction
 
 4. **Permanent Ban**
-   * Severe violations or repeated behavior
-   * Action: Permanent ban from the community
+   - Severe violations or repeated behavior
+   - Action: Permanent ban from the community
 
 ## Attribution
 

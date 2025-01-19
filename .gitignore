@@ -1,2 +1,2 @@
-/build/*
-!/build/.gitkeep
+dist
+node_modules

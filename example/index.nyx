@@ -1,1 +1,9 @@
-print("Hello, World!");
+import io from "nyx-stdlib/io"; // https://nyx-lang.com/docs/stdlib/io
+import axios from "npm/axios"; // https://www.npmjs.com/package/axios
+
+async def main() {
+  let response = await axios.get("https://jsonplaceholder.typicode.com/todos/1")
+  io.println(response.data.title)
+};
+
+main();

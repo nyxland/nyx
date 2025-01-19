@@ -1,0 +1,41 @@
+name: Format code
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Format code
+        run: bun format
+
+      - name: Configure git
+        run: |
+          git config --global user.name "NYX Language Bot"
+          git config --global user.email "nyxlangbot@binaryblazer.me"
+
+      - name: Check for changes
+        run: |
+          git diff --exit-code || git commit -am "Format code with Prettier" && git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.FORMAT_PAT }}
