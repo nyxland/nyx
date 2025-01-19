@@ -26,9 +26,12 @@ jobs:
         run: bun format
 
       - name: Commit changes if any
+        env:
+          ACTIONS_PAT: ${{ secrets.FORMAT_PAT}}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.FORMAT_PAT }}@github.com/${{ github.repository }}.git
           if [[ `git status --porcelain` ]]; then
             git add .
             git commit -m "Formatted code with Prettier"
