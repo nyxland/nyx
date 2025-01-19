@@ -1,5 +1,5 @@
-const { execSync } = require('child_process');
-const os = require('os');
+const { execSync } = require('node:child_process');
+const os = require('node:os');
 
 const platform = os.platform();
 
