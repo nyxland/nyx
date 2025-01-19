@@ -2,6 +2,7 @@ name: Format code
 
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
@@ -35,7 +36,25 @@ jobs:
           git config --global user.email "nyxlangbot@binaryblazer.me"
 
       - name: Check for changes
+        id: changes
         run: |
-          git diff --exit-code || git commit -am "Format code with Prettier" && git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.FORMAT_PAT }}
+          git diff --exit-code || echo "changes"
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changes == 'changes'
+        id: create_pull_request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.FORMAT_PAT }}
+          commit-message: "Format code with Prettier"
+          branch: format-changes
+          title: "Format code with Prettier"
+          body: "This PR formats the code with Prettier."
+          labels: "auto-merge"
+
+      - name: Enable Auto-Merge
+        if: steps.changes.outputs.changes == 'changes'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.FORMAT_PAT }}
+          pull-request-number: ${{ steps.create_pull_request.outputs.pull-request-number }}
