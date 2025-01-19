@@ -14,12 +14,14 @@ export interface FunctionDeclaration extends ASTNode {
   id: Identifier;
   params: Identifier[];
   body: BlockStatement;
+  async: boolean;
 }
 
 export interface CallExpression extends ASTNode {
   type: "CallExpression";
   callee: Identifier;
   arguments: ASTNode[];
+  await: boolean;
 }
 
 export interface VariableDeclaration extends ASTNode {
@@ -78,6 +80,18 @@ export interface BinaryExpression extends ASTNode {
   right: ASTNode;
 }
 
+export interface ImportDeclaration extends ASTNode {
+  type: "ImportDeclaration";
+  specifiers: ImportSpecifier[];
+  source: Literal;
+}
+
+export interface ImportSpecifier extends ASTNode {
+  type: "ImportSpecifier";
+  local: Identifier;
+  imported: Identifier;
+}
+
 export function parse(code: string): Program {
   // Placeholder for the actual parser implementation
   return {
@@ -87,6 +101,7 @@ export function parse(code: string): Program {
         type: "CallExpression",
         callee: { type: "Identifier", name: "main" },
         arguments: [],
+        await: false,
       },
     ],
   };

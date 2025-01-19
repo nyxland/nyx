@@ -1,18 +1,38 @@
 import axios from "axios";
+import { parse, Program, ASTNode, ImportDeclaration, CallExpression, Identifier, Literal } from "./ast";
 
-interface ASTNode {
-  type: string;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+interface Module {
   [key: string]: any;
 }
 
+const io: Module = {
+  println: (message: string) => {
+    console.log(message);
+  },
+};
+
+const http: Module = {
+  get: async (url: string) => {
+    const response = await axios.get(url);
+    return response;
+  },
+};
+
 class Interpreter {
-  async interpret(ast: ASTNode) {
+  private modules: { [key: string]: Module } = {
+    io,
+    http,
+  };
+
+  async interpret(ast: Program) {
     switch (ast.type) {
       case "Program":
         for (const statement of ast.body) {
           await this.interpret(statement);
         }
+        break;
+      case "ImportDeclaration":
+        this.handleImportDeclaration(ast);
         break;
       case "FunctionDeclaration":
         // Handle function declaration
@@ -37,11 +57,27 @@ class Interpreter {
     }
   }
 
-  async handleCallExpression(ast: ASTNode) {
-    if (ast.callee.name === "main") {
+  handleImportDeclaration(ast: ImportDeclaration) {
+    const moduleName = (ast.source as Literal).value;
+    const module = this.modules[moduleName];
+    if (!module) {
+      throw new Error(`Module not found: ${moduleName}`);
+    }
+    for (const specifier of ast.specifiers) {
+      const localName = (specifier.local as Identifier).name;
+      const importedName = (specifier.imported as Identifier).name;
+      this[localName] = module[importedName];
+    }
+  }
+
+  async handleCallExpression(ast: CallExpression) {
+    const callee = (ast.callee as Identifier).name;
+    if (callee === "main") {
       await this.main();
+    } else if (this[callee]) {
+      await this[callee](...ast.arguments.map((arg) => this.evaluate(arg)));
     } else {
-      throw new Error(`Unknown function: ${ast.callee.name}`);
+      throw new Error(`Unknown function: ${callee}`);
     }
   }
 
@@ -76,8 +112,7 @@ class Interpreter {
       case "Literal":
         return node.value;
       case "Identifier":
-        // Handle identifier
-        break;
+        return this[node.name];
       case "BinaryExpression":
         return this.evaluateBinaryExpression(node);
       case "CallExpression":
@@ -106,29 +141,15 @@ class Interpreter {
   }
 
   async main() {
-    const response = await axios.get(
+    const response = await http.get(
       "https://jsonplaceholder.typicode.com/todos/1",
     );
-    console.log(response.data);
+    io.println(response.data);
   }
 }
 
 export function interpret(code: string) {
-  const ast: ASTNode = parse(code);
+  const ast: Program = parse(code);
   const interpreter = new Interpreter();
   interpreter.interpret(ast);
-}
-
-function parse(code: string): ASTNode {
-  // Placeholder for the actual parser implementation
-  return {
-    type: "Program",
-    body: [
-      {
-        type: "CallExpression",
-        callee: { name: "main" },
-        arguments: [],
-      },
-    ],
-  };
 }

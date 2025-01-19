@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { readFileSync } from "node:fs";
 import process from "node:process";
 import { interpret } from "./interpreter";
+import { parse } from "./ast";
 
 if (require.main === module) {
   const program = new Command();
@@ -14,7 +15,8 @@ if (require.main === module) {
     .argument("<file>", "Nyx source file to execute")
     .action((file) => {
       const code = readFileSync(file, "utf-8");
-      interpret(code);
+      const ast = parse(code);
+      interpret(ast);
     });
 
   program.parse(process.argv);
