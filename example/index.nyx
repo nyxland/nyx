@@ -1,9 +1,9 @@
-import io from "nyx-stdlib/io"; // https://nyx-lang.com/docs/stdlib/io
-import axios from "npm/axios"; // https://www.npmjs.com/package/axios
+from "nyx-stdlib/io" import io; // https://nyx-lang.com/docs/stdlib/io
+from "nyx-stdlib/http" import http; // https://nyx-lang.com/docs/stdlib/http
 
 async def main() {
-  let response = await axios.get("https://jsonplaceholder.typicode.com/todos/1")
-  io.println(response.data.title)
+  let response = await http.get("https://jsonplaceholder.typicode.com/todos/1");
+  io.println(response.data)
 };
 
 main();
