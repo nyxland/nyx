@@ -1,5 +1,5 @@
-import io from "nyx-stdlib/io"; // https://nyx-lang.com/docs/stdlib/io
-import http from "nyx-stdlib/http"; // https://nyx-lang.com/docs/stdlib/http
+from "nyx-stdlib/io" import io; // https://nyx-lang.com/docs/stdlib/io
+from "nyx-stdlib/http" import http; // https://nyx-lang.com/docs/stdlib/http
 
 async def main() {
   let response = await http.get("https://jsonplaceholder.typicode.com/todos/1");
