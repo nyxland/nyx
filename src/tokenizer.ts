@@ -145,6 +145,11 @@ export class Tokenizer {
         continue;
       }
 
+      if (char === '"' || char === "'") {
+        tokens.push(this.tokenizeString());
+        continue;
+      }
+
       this.error(`Unexpected character: ${char}`);
     }
 
@@ -177,5 +182,15 @@ export class Tokenizer {
       value += this.advance();
     }
     return this.createToken(TokenType.Operator, value);
+  }
+
+  private tokenizeString(): Token {
+    const quote = this.advance();
+    let value = "";
+    while (!this.isEOF() && this.peek() !== quote) {
+      value += this.advance();
+    }
+    this.advance(); // Consume the closing quote
+    return this.createToken(TokenType.Literal, value);
   }
 }
