@@ -327,5 +327,6 @@ class Parser {
 
 function tokenize(code: string): Token[] {
   const tokenizer = new Tokenizer(code);
+  console.log(tokenizer.tokenize());
   return tokenizer.tokenize();
 }
