@@ -1,3 +1,5 @@
+import { Token, Tokenizer, TokenType } from "./tokenizer.js";
+
 export interface ASTNode {
   type: string;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
