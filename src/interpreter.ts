@@ -83,9 +83,7 @@ class Interpreter {
 
   async handleCallExpression(ast: CallExpression) {
     const callee = (ast.callee as Identifier).name;
-    if (callee === "main") {
-      await this.main();
-    } else if (this[callee]) {
+    if (this[callee]) {
       await this[callee](...ast.arguments.map((arg) => this.evaluate(arg)));
     } else {
       throw new Error(`Unknown function: ${callee}`);
@@ -149,13 +147,6 @@ class Interpreter {
       default:
         throw new Error(`Unknown operator: ${node.operator}`);
     }
-  }
-
-  async main() {
-    const response = await http.get(
-      "https://jsonplaceholder.typicode.com/todos/1",
-    );
-    io.println(response.data);
   }
 }
 

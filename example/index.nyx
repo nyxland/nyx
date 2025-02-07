@@ -5,5 +5,3 @@ async def main() {
   let response = await http.get("https://jsonplaceholder.typicode.com/todos/1");
   io.println(response.data)
 };
-
-main();
