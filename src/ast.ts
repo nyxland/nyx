@@ -85,7 +85,7 @@ export interface BinaryExpression extends ASTNode {
 export interface ImportDeclaration extends ASTNode {
   type: "ImportDeclaration";
   specifiers: ImportSpecifier[];
-  source: Literal;
+  source: Literal | null;
 }
 
 export interface ImportSpecifier extends ASTNode {
@@ -254,8 +254,10 @@ class Parser {
       }
       specifiers.push({ type: "ImportSpecifier", local, imported });
     } while (this.match(TokenType.Operator) && this.previous().value === ",");
-    this.consume(TokenType.Keyword, "Expected 'from' after import specifiers.");
-    const source = this.parseLiteral();
+    let source: Literal | null = null;
+    if (this.match(TokenType.Keyword) && this.previous().value === "from") {
+      source = this.parseLiteral();
+    }
     this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
     return { type: "ImportDeclaration", specifiers, source };
   }

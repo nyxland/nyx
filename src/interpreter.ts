@@ -75,15 +75,15 @@ class Interpreter {
   }
 
   handleImportDeclaration(ast: ImportDeclaration) {
-    const moduleName = (ast.source as Literal).value;
-    const module = this.modules[moduleName];
-    if (!module) {
-      throw new Error(`Module not found: ${moduleName}`);
-    }
     for (const specifier of ast.specifiers) {
       const localName = (specifier.local as Identifier).name;
       const importedName = (specifier.imported as Identifier).name;
-      this[localName] = module[importedName];
+      const moduleName = importedName.split("/")[0];
+      const module = this.modules[moduleName];
+      if (!module) {
+        throw new Error(`Module not found: ${moduleName}`);
+      }
+      this[localName] = module[importedName.split("/")[1]];
     }
   }
 
