@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "dev": "nodemon --watch src --exec \"tsc\" --ext \"ts\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "bun scripts/postinstall.js",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@types/bun": "^1.1.17",
     "@types/node": "^22.10.7",
+    "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "typescript": "^5.7.3"
   },

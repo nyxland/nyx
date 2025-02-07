@@ -246,6 +246,7 @@ class Parser {
 
   private parseImportDeclaration(): ImportDeclaration {
     const local = this.parseIdentifier();
+    console.log(local);
     this.consume(TokenType.Keyword, "Expected 'from' after import specifiers.");
     const source = this.parseLiteral();
     this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
