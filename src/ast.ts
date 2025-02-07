@@ -245,11 +245,19 @@ class Parser {
   }
 
   private parseImportDeclaration(): ImportDeclaration {
-    const local = this.parseIdentifier();
+    const specifiers: ImportSpecifier[] = [];
+    do {
+      const local = this.parseIdentifier();
+      let imported = local;
+      if (this.match(TokenType.Keyword) && this.previous().value === "as") {
+        imported = this.parseIdentifier();
+      }
+      specifiers.push({ type: "ImportSpecifier", local, imported });
+    } while (this.match(TokenType.Operator) && this.previous().value === ",");
     this.consume(TokenType.Keyword, "Expected 'from' after import specifiers.");
     const source = this.parseLiteral();
     this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
-    return { type: "ImportDeclaration", specifiers: [{ type: "ImportSpecifier", local, imported: local }], source };
+    return { type: "ImportDeclaration", specifiers, source };
   }
 
   private parseBlockStatement(): BlockStatement {
