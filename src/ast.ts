@@ -93,16 +93,235 @@ export interface ImportSpecifier extends ASTNode {
 }
 
 export function parse(code: string): Program {
-  // Placeholder for the actual parser implementation
-  return {
-    type: "Program",
-    body: [
-      {
-        type: "CallExpression",
-        callee: { type: "Identifier", name: "main" },
-        arguments: [],
-        await: false,
-      },
-    ],
-  };
+  const tokens = tokenize(code);
+  const parser = new Parser(tokens);
+  return parser.parseProgram();
+}
+
+class Parser {
+  private tokens: Token[];
+  private current: number;
+
+  constructor(tokens: Token[]) {
+    this.tokens = tokens;
+    this.current = 0;
+  }
+
+  private isAtEnd(): boolean {
+    return this.current >= this.tokens.length;
+  }
+
+  private peek(): Token {
+    return this.tokens[this.current];
+  }
+
+  private advance(): Token {
+    if (!this.isAtEnd()) this.current++;
+    return this.previous();
+  }
+
+  private previous(): Token {
+    return this.tokens[this.current - 1];
+  }
+
+  private match(...types: TokenType[]): boolean {
+    for (const type of types) {
+      if (this.check(type)) {
+        this.advance();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private check(type: TokenType): boolean {
+    if (this.isAtEnd()) return false;
+    return this.peek().type === type;
+  }
+
+  private consume(type: TokenType, message: string): Token {
+    if (this.check(type)) return this.advance();
+    throw new Error(message);
+  }
+
+  public parseProgram(): Program {
+    const body: ASTNode[] = [];
+    while (!this.isAtEnd()) {
+      body.push(this.parseStatement());
+    }
+    return { type: "Program", body };
+  }
+
+  private parseStatement(): ASTNode {
+    if (this.match(TokenType.Keyword)) {
+      switch (this.previous().value) {
+        case "def":
+          return this.parseFunctionDeclaration();
+        case "let":
+        case "const":
+          return this.parseVariableDeclaration();
+        case "if":
+          return this.parseIfStatement();
+        case "for":
+          return this.parseForStatement();
+        case "while":
+          return this.parseWhileStatement();
+        case "return":
+          return this.parseReturnStatement();
+        case "import":
+          return this.parseImportDeclaration();
+      }
+    }
+    return this.parseExpressionStatement();
+  }
+
+  private parseFunctionDeclaration(): FunctionDeclaration {
+    const id = this.parseIdentifier();
+    this.consume(TokenType.Operator, "Expected '(' after function name.");
+    const params: Identifier[] = [];
+    if (!this.check(TokenType.Operator) || this.peek().value !== ")") {
+      do {
+        params.push(this.parseIdentifier());
+      } while (this.match(TokenType.Operator) && this.previous().value === ",");
+    }
+    this.consume(TokenType.Operator, "Expected ')' after parameters.");
+    const body = this.parseBlockStatement();
+    return { type: "FunctionDeclaration", id, params, body, async: false };
+  }
+
+  private parseVariableDeclaration(): VariableDeclaration {
+    const kind = this.previous().value as "let" | "const";
+    const declarations: VariableDeclarator[] = [];
+    do {
+      const id = this.parseIdentifier();
+      let init: ASTNode | null = null;
+      if (this.match(TokenType.Operator) && this.previous().value === "=") {
+        init = this.parseExpression();
+      }
+      declarations.push({ type: "VariableDeclarator", id, init });
+    } while (this.match(TokenType.Operator) && this.previous().value === ",");
+    this.consume(TokenType.Punctuation, "Expected ';' after variable declaration.");
+    return { type: "VariableDeclaration", declarations, kind };
+  }
+
+  private parseIfStatement(): IfStatement {
+    this.consume(TokenType.Operator, "Expected '(' after 'if'.");
+    const test = this.parseExpression();
+    this.consume(TokenType.Operator, "Expected ')' after condition.");
+    const consequent = this.parseBlockStatement();
+    let alternate: BlockStatement | null = null;
+    if (this.match(TokenType.Keyword) && this.previous().value === "else") {
+      alternate = this.parseBlockStatement();
+    }
+    return { type: "IfStatement", test, consequent, alternate };
+  }
+
+  private parseForStatement(): ForStatement {
+    this.consume(TokenType.Operator, "Expected '(' after 'for'.");
+    const init = this.parseExpression();
+    this.consume(TokenType.Punctuation, "Expected ';' after initialization.");
+    const test = this.parseExpression();
+    this.consume(TokenType.Punctuation, "Expected ';' after condition.");
+    const update = this.parseExpression();
+    this.consume(TokenType.Operator, "Expected ')' after update.");
+    const body = this.parseBlockStatement();
+    return { type: "ForStatement", init, test, update, body };
+  }
+
+  private parseWhileStatement(): WhileStatement {
+    this.consume(TokenType.Operator, "Expected '(' after 'while'.");
+    const test = this.parseExpression();
+    this.consume(TokenType.Operator, "Expected ')' after condition.");
+    const body = this.parseBlockStatement();
+    return { type: "WhileStatement", test, body };
+  }
+
+  private parseReturnStatement(): ASTNode {
+    const argument = this.parseExpression();
+    this.consume(TokenType.Punctuation, "Expected ';' after return value.");
+    return { type: "ReturnStatement", argument };
+  }
+
+  private parseImportDeclaration(): ImportDeclaration {
+    const specifiers: ImportSpecifier[] = [];
+    do {
+      const local = this.parseIdentifier();
+      let imported = local;
+      if (this.match(TokenType.Keyword) && this.previous().value === "as") {
+        imported = this.parseIdentifier();
+      }
+      specifiers.push({ type: "ImportSpecifier", local, imported });
+    } while (this.match(TokenType.Operator) && this.previous().value === ",");
+    this.consume(TokenType.Keyword, "Expected 'from' after import specifiers.");
+    const source = this.parseLiteral();
+    this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
+    return { type: "ImportDeclaration", specifiers, source };
+  }
+
+  private parseBlockStatement(): BlockStatement {
+    this.consume(TokenType.Operator, "Expected '{' before block.");
+    const body: ASTNode[] = [];
+    while (!this.check(TokenType.Operator) || this.peek().value !== "}") {
+      body.push(this.parseStatement());
+    }
+    this.consume(TokenType.Operator, "Expected '}' after block.");
+    return { type: "BlockStatement", body };
+  }
+
+  private parseExpressionStatement(): ASTNode {
+    const expression = this.parseExpression();
+    this.consume(TokenType.Punctuation, "Expected ';' after expression.");
+    return { type: "ExpressionStatement", expression };
+  }
+
+  private parseExpression(): ASTNode {
+    return this.parseAssignment();
+  }
+
+  private parseAssignment(): ASTNode {
+    const left = this.parseBinaryExpression();
+    if (this.match(TokenType.Operator) && this.previous().value === "=") {
+      const right = this.parseAssignment();
+      return { type: "AssignmentExpression", left, right };
+    }
+    return left;
+  }
+
+  private parseBinaryExpression(): ASTNode {
+    let left = this.parsePrimary();
+    while (this.match(TokenType.Operator)) {
+      const operator = this.previous().value;
+      const right = this.parsePrimary();
+      left = { type: "BinaryExpression", operator, left, right };
+    }
+    return left;
+  }
+
+  private parsePrimary(): ASTNode {
+    if (this.match(TokenType.Identifier)) {
+      return this.parseIdentifier();
+    }
+    if (this.match(TokenType.Literal)) {
+      return this.parseLiteral();
+    }
+    if (this.match(TokenType.Operator) && this.previous().value === "(") {
+      const expression = this.parseExpression();
+      this.consume(TokenType.Operator, "Expected ')' after expression.");
+      return expression;
+    }
+    throw new Error("Unexpected token.");
+  }
+
+  private parseIdentifier(): Identifier {
+    return { type: "Identifier", name: this.previous().value };
+  }
+
+  private parseLiteral(): Literal {
+    return { type: "Literal", value: this.previous().value };
+  }
+}
+
+function tokenize(code: string): Token[] {
+  const tokenizer = new Tokenizer(code);
+  return tokenizer.tokenize();
 }

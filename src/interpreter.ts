@@ -7,6 +7,11 @@ import {
   type CallExpression,
   type Identifier,
   type Literal,
+  type FunctionDeclaration,
+  type VariableDeclaration,
+  type IfStatement,
+  type ForStatement,
+  type WhileStatement,
 } from "./ast";
 
 interface Module {
@@ -34,6 +39,7 @@ class Interpreter {
     io,
     http,
   };
+  private functions: { [key: string]: FunctionDeclaration } = {};
 
   async interpret(ast: ASTNode) {
     switch (ast.type) {
@@ -46,22 +52,22 @@ class Interpreter {
         this.handleImportDeclaration(ast as ImportDeclaration);
         break;
       case "FunctionDeclaration":
-        // Handle function declaration
+        this.handleFunctionDeclaration(ast as FunctionDeclaration);
         break;
       case "CallExpression":
         await this.handleCallExpression(ast as CallExpression);
         break;
       case "VariableDeclaration":
-        // Handle variable declaration
+        this.handleVariableDeclaration(ast as VariableDeclaration);
         break;
       case "IfStatement":
-        await this.handleIfStatement(ast);
+        await this.handleIfStatement(ast as IfStatement);
         break;
       case "ForStatement":
-        await this.handleForStatement(ast);
+        await this.handleForStatement(ast as ForStatement);
         break;
       case "WhileStatement":
-        await this.handleWhileStatement(ast);
+        await this.handleWhileStatement(ast as WhileStatement);
         break;
       default:
         throw new Error(`Unknown AST node type: ${ast.type}`);
@@ -81,16 +87,30 @@ class Interpreter {
     }
   }
 
+  handleFunctionDeclaration(ast: FunctionDeclaration) {
+    const functionName = (ast.id as Identifier).name;
+    this.functions[functionName] = ast;
+  }
+
   async handleCallExpression(ast: CallExpression) {
     const callee = (ast.callee as Identifier).name;
-    if (this[callee]) {
+    if (this.functions[callee]) {
+      await this.executeFunction(this.functions[callee], ast.arguments);
+    } else if (this[callee]) {
       await this[callee](...ast.arguments.map((arg) => this.evaluate(arg)));
     } else {
       throw new Error(`Unknown function: ${callee}`);
     }
   }
 
-  async handleIfStatement(ast: ASTNode) {
+  handleVariableDeclaration(ast: VariableDeclaration) {
+    for (const declaration of ast.declarations) {
+      const varName = (declaration.id as Identifier).name;
+      this[varName] = declaration.init ? this.evaluate(declaration.init) : undefined;
+    }
+  }
+
+  async handleIfStatement(ast: IfStatement) {
     const test = await this.evaluate(ast.test);
     if (test) {
       await this.interpret(ast.consequent);
@@ -99,7 +119,7 @@ class Interpreter {
     }
   }
 
-  async handleForStatement(ast: ASTNode) {
+  async handleForStatement(ast: ForStatement) {
     for (
       await this.evaluate(ast.init);
       await this.evaluate(ast.test);
@@ -109,7 +129,7 @@ class Interpreter {
     }
   }
 
-  async handleWhileStatement(ast: ASTNode) {
+  async handleWhileStatement(ast: WhileStatement) {
     while (await this.evaluate(ast.test)) {
       await this.interpret(ast.body);
     }
@@ -147,6 +167,18 @@ class Interpreter {
       default:
         throw new Error(`Unknown operator: ${node.operator}`);
     }
+  }
+
+  async executeFunction(func: FunctionDeclaration, args: ASTNode[]) {
+    const params = func.params.map((param) => (param as Identifier).name);
+    const localScope: { [key: string]: any } = {};
+    for (let i = 0; i < params.length; i++) {
+      localScope[params[i]] = await this.evaluate(args[i]);
+    }
+    const previousScope = { ...this };
+    Object.assign(this, localScope);
+    await this.interpret(func.body);
+    Object.assign(this, previousScope);
   }
 }
 
