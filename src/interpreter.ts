@@ -12,6 +12,7 @@ import {
   type IfStatement,
   type ForStatement,
   type WhileStatement,
+  type AwaitExpression,
 } from "./ast";
 
 interface Module {
@@ -68,6 +69,9 @@ class Interpreter {
         break;
       case "WhileStatement":
         await this.handleWhileStatement(ast as WhileStatement);
+        break;
+      case "AwaitExpression":
+        await this.handleAwaitExpression(ast as AwaitExpression);
         break;
       default:
         throw new Error(`Unknown AST node type: ${ast.type}`);
@@ -135,6 +139,10 @@ class Interpreter {
     }
   }
 
+  async handleAwaitExpression(ast: AwaitExpression) {
+    return await this.evaluate(ast.argument);
+  }
+
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async evaluate(node: ASTNode): Promise<any> {
     switch (node.type) {
@@ -146,6 +154,8 @@ class Interpreter {
         return this.evaluateBinaryExpression(node);
       case "CallExpression":
         return this.handleCallExpression(node as CallExpression);
+      case "AwaitExpression":
+        return this.handleAwaitExpression(node as AwaitExpression);
       default:
         throw new Error(`Unknown AST node type: ${node.type}`);
     }
