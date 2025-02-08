@@ -106,19 +106,21 @@ export interface MemberExpression extends ASTNode {
   property: Identifier;
 }
 
-export function parse(code: string): Program {
-  const tokens = tokenize(code);
-  const parser = new Parser(tokens);
+export function parse(code: string, debug: boolean = false): Program {
+  const tokens = tokenize(code, debug);
+  const parser = new Parser(tokens, debug);
   return parser.parseProgram();
 }
 
 class Parser {
   private tokens: Token[];
   private current: number;
+  private debug: boolean;
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: Token[], debug: boolean = false) {
     this.tokens = tokens;
     this.current = 0;
+    this.debug = debug;
   }
 
   private isAtEnd(): boolean {
@@ -376,8 +378,10 @@ class Parser {
   }
 }
 
-function tokenize(code: string): Token[] {
+function tokenize(code: string, debug: boolean = false): Token[] {
   const tokenizer = new Tokenizer(code);
-  console.log(tokenizer.tokenize());
+  if (debug) {
+    console.log(tokenizer.tokenize());
+  }
   return tokenizer.tokenize();
 }

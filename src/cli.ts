@@ -12,9 +12,10 @@ async function main() {
     .version("1.0.0-b.1")
     .description("Nyx Programming Language CLI")
     .argument("<file>", "Nyx source file to execute")
-    .action(async (file) => {
+    .option("--debug", "Enable debug mode")
+    .action(async (file, options) => {
       const code = readFileSync(file, "utf-8");
-      await interpret(code);
+      await interpret(code, options.debug);
     });
 
   await program.parseAsync(process.argv);

@@ -47,29 +47,23 @@ const operators = new Set([
   "||",
   "!",
   "=>",
-  "(",
-  ")",
-  "{",
-  "}",
-  "[",
-  "]",
-  ",",
-  ".",
-  ":",
-  ";",
 ]);
+
+const punctuation = new Set(["(", ")", "{", "}", "[", "]", ",", ".", ":", ";"]);
 
 export class Tokenizer {
   private source: string;
   private position: number;
   private line: number;
   private column: number;
+  private debug: boolean;
 
-  constructor(source: string) {
+  constructor(source: string, debug: boolean = false) {
     this.source = source;
     this.position = 0;
     this.line = 1;
     this.column = 1;
+    this.debug = debug;
   }
 
   private isEOF(): boolean {
@@ -112,7 +106,9 @@ export class Tokenizer {
   }
 
   private createToken(type: TokenType, value: string): Token {
-    return { type, value, line: this.line, column: this.column };
+    const token = { type, value, line: this.line, column: this.column };
+    if (this.debug) console.log("Created token:", token);
+    return token;
   }
 
   private error(message: string): never {
@@ -142,6 +138,11 @@ export class Tokenizer {
 
       if (operators.has(char)) {
         tokens.push(this.tokenizeOperator());
+        continue;
+      }
+
+      if (punctuation.has(char)) {
+        tokens.push(this.tokenizePunctuation());
         continue;
       }
 
@@ -187,6 +188,10 @@ export class Tokenizer {
       value += this.advance();
     }
     return this.createToken(TokenType.Operator, value);
+  }
+
+  private tokenizePunctuation(): Token {
+    return this.createToken(TokenType.Punctuation, this.advance());
   }
 
   private tokenizeString(): Token {

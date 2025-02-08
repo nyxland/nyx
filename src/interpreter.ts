@@ -26,8 +26,14 @@ class Interpreter {
     http,
   };
   private functions: { [key: string]: FunctionDeclaration } = {};
+  private debug: boolean;
+
+  constructor(debug: boolean = false) {
+    this.debug = debug;
+  }
 
   async interpret(ast: ASTNode): Promise<any> {
+    if (this.debug) console.log("Interpreting AST Node:", ast);
     switch (ast.type) {
       case "Program":
         for (const statement of ast.body) {
@@ -62,6 +68,7 @@ class Interpreter {
   }
 
   handleImportDeclaration(ast: ImportDeclaration) {
+    if (this.debug) console.log("Handling Import Declaration:", ast);
     for (const specifier of ast.specifiers) {
       const localName = (specifier.local as Identifier).name;
       const source = (ast.source as Literal).value;
@@ -71,27 +78,31 @@ class Interpreter {
         throw new Error(`Module not found: ${moduleName}`);
       }
       this[localName] = module;
+      if (this.debug) console.log(`Imported module '${moduleName}' as '${localName}'`);
     }
   }
 
   handleFunctionDeclaration(ast: FunctionDeclaration) {
+    if (this.debug) console.log("Handling Function Declaration:", ast);
     const functionName = (ast.id as Identifier).name;
     this.functions[functionName] = ast;
   }
 
   async handleCallExpression(ast: CallExpression): Promise<any> {
+    if (this.debug) console.log("Handling Call Expression:", ast);
     const callee = ast.callee as any;
-    
+
     if (callee.type === "Identifier" && this.functions[callee.name]) {
       return await this.executeFunction(this.functions[callee.name], ast.arguments);
     }
-    
+
     // Handle module function calls (e.g., http.get, io.println)
     if (callee.type === "MemberExpression") {
       const obj = await this.evaluate(callee.object);
       const prop = callee.property.name;
       if (obj && typeof obj[prop] === "function") {
         const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
+        if (this.debug) console.log(`Calling function '${prop}' on module`, obj);
         return await obj[prop].apply(obj, args);
       }
     }
@@ -99,6 +110,7 @@ class Interpreter {
     // Handle direct function calls
     if (callee.type === "Identifier" && this[callee.name]) {
       const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
+      if (this.debug) console.log(`Calling function '${callee.name}' with arguments`, args);
       return await this[callee.name].apply(this, args);
     }
 
@@ -106,6 +118,7 @@ class Interpreter {
   }
 
   handleVariableDeclaration(ast: VariableDeclaration) {
+    if (this.debug) console.log("Handling Variable Declaration:", ast);
     for (const declaration of ast.declarations) {
       const varName = (declaration.id as Identifier).name;
       this[varName] = declaration.init ? this.evaluate(declaration.init) : undefined;
@@ -113,6 +126,7 @@ class Interpreter {
   }
 
   async handleIfStatement(ast: IfStatement) {
+    if (this.debug) console.log("Handling If Statement:", ast);
     const test = await this.evaluate(ast.test);
     if (test) {
       await this.interpret(ast.consequent);
@@ -122,6 +136,7 @@ class Interpreter {
   }
 
   async handleForStatement(ast: ForStatement) {
+    if (this.debug) console.log("Handling For Statement:", ast);
     for (
       await this.evaluate(ast.init);
       await this.evaluate(ast.test);
@@ -132,19 +147,22 @@ class Interpreter {
   }
 
   async handleWhileStatement(ast: WhileStatement) {
+    if (this.debug) console.log("Handling While Statement:", ast);
     while (await this.evaluate(ast.test)) {
       await this.interpret(ast.body);
     }
   }
 
   async handleAwaitExpression(ast: AwaitExpression): Promise<any> {
+    if (this.debug) console.log("Handling Await Expression:", ast);
     return await this.evaluate(ast.argument);
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async evaluate(node: ASTNode): Promise<any> {
     if (!node) return undefined;
-    
+    if (this.debug) console.log("Evaluating AST Node:", node);
+
     switch (node.type) {
       case "Literal":
         return node.value;
@@ -166,6 +184,7 @@ class Interpreter {
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async evaluateBinaryExpression(node: ASTNode): Promise<any> {
+    if (this.debug) console.log("Evaluating Binary Expression:", node);
     const left = await this.evaluate(node.left);
     const right = await this.evaluate(node.right);
     switch (node.operator) {
@@ -183,6 +202,7 @@ class Interpreter {
   }
 
   async executeFunction(func: FunctionDeclaration, args: ASTNode[]): Promise<any> {
+    if (this.debug) console.log("Executing Function:", func);
     const params = func.params.map((param) => (param as Identifier).name);
     const localScope: { [key: string]: any } = {};
     for (let i = 0; i < params.length; i++) {
@@ -196,11 +216,11 @@ class Interpreter {
   }
 }
 
-export async function interpret(code: string) {
+export async function interpret(code: string, debug: boolean = false) {
   try {
     const now = new Date();
     const ast: Program = parse(code);
-    const interpreter = new Interpreter();
+    const interpreter = new Interpreter(debug);
     await interpreter.interpret(ast).then(() => {
       console.log(`Execution time: ${new Date().getTime() - now.getTime()}ms`);
     });
