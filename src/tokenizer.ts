@@ -1,3 +1,5 @@
+import { ParserError } from "./errors.js";
+
 export enum TokenType {
   Keyword = 0,
   Identifier = 1,
