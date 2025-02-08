@@ -5,17 +5,24 @@ import { readFileSync } from "node:fs";
 import process from "node:process";
 import { interpret } from "./interpreter";
 
-if (require.main === module) {
+async function main() {
   const program = new Command();
 
   program
     .version("1.0.0-b.1")
     .description("Nyx Programming Language CLI")
     .argument("<file>", "Nyx source file to execute")
-    .action((file) => {
+    .action(async (file) => {
       const code = readFileSync(file, "utf-8");
-      interpret(code);
+      await interpret(code);
     });
 
-  program.parse(process.argv);
+  await program.parseAsync(process.argv);
+}
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }

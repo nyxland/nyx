@@ -22,7 +22,7 @@ interface Module {
 }
 
 const io: Module = {
-  println: (message: string) => {
+  println: (message: any) => {
     console.log(message);
   },
 };
@@ -30,7 +30,7 @@ const io: Module = {
 const http: Module = {
   get: async (url: string) => {
     const response = await axios.get(url);
-    return response;
+    return response.data;
   },
 };
 
@@ -57,8 +57,7 @@ class Interpreter {
         this.handleFunctionDeclaration(ast as FunctionDeclaration);
         break;
       case "CallExpression":
-        await this.handleCallExpression(ast as CallExpression);
-        break;
+        return await this.handleCallExpression(ast as CallExpression);
       case "VariableDeclaration":
         this.handleVariableDeclaration(ast as VariableDeclaration);
         break;
@@ -72,8 +71,7 @@ class Interpreter {
         await this.handleWhileStatement(ast as WhileStatement);
         break;
       case "AwaitExpression":
-        await this.handleAwaitExpression(ast as AwaitExpression);
-        break;
+        return await this.handleAwaitExpression(ast as AwaitExpression);
       default:
         throw new Error(`Unknown AST node type: ${ast.type}`);
     }
@@ -99,10 +97,19 @@ class Interpreter {
 
   async handleCallExpression(ast: CallExpression) {
     const callee = (ast.callee as Identifier).name;
+  
     if (this.functions[callee]) {
-      await this.executeFunction(this.functions[callee], ast.arguments);
+      return await this.executeFunction(this.functions[callee], ast.arguments);
+    } else if (callee.includes(".") && this.modules[callee.split(".")[0]]) {
+      const moduleName = callee.split(".")[0];
+      const functionName = callee.split(".")[1];
+      const module = this.modules[moduleName];
+      if (module && module[functionName]) {
+        const args = await Promise.all(ast.arguments.map((arg) => this.evaluate(arg)));
+        return await module[functionName](...args);
+      }
     } else if (this[callee]) {
-      await this[callee](...ast.arguments.map((arg) => this.evaluate(arg)));
+      return await this[callee](...await Promise.all(ast.arguments.map((arg) => this.evaluate(arg))));
     } else {
       throw new Error(`Unknown function: ${callee}`);
     }
@@ -193,13 +200,11 @@ class Interpreter {
   }
 }
 
-export function interpret(code: string) {
+export async function interpret(code: string) {
   try {
     const ast: Program = parse(code);
     const interpreter = new Interpreter();
-    console.log(ast);
-    console.log(interpreter.interpret(ast));
-    interpreter.interpret(ast);
+    await interpreter.interpret(ast);
   } catch (error) {
     if (error instanceof ParserError) {
       console.error(error.toString());

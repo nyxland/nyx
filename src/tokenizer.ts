@@ -153,8 +153,8 @@ export class Tokenizer {
       this.error(`Unexpected character: ${char}`);
     }
 
-    // Ignore trailing white spaces
-    while (tokens.length > 0 && tokens[tokens.length - 1].type === TokenType.EOF && this.isWhitespace(this.peek())) {
+    // Skip trailing white spaces before adding EOF token
+    while (!this.isEOF() && this.isWhitespace(this.peek())) {
       this.advance();
     }
 

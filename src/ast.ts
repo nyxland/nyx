@@ -116,7 +116,7 @@ class Parser {
   }
 
   private isAtEnd(): boolean {
-    return this.current >= this.tokens.length;
+    return this.peek().type === TokenType.EOF;
   }
 
   private peek(): Token {
