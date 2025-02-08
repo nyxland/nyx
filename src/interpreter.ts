@@ -185,5 +185,7 @@ class Interpreter {
 export function interpret(code: string) {
   const ast: Program = parse(code);
   const interpreter = new Interpreter();
+  console.log(ast);
+  console.log(interpreter.interpret(ast));
   interpreter.interpret(ast);
 }
