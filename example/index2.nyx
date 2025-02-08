@@ -1,0 +1,5 @@
+import io from "nyx-stdlib/io";
+import http from "nyx-stdlib/http";
+
+response = await http.get("https://jsonplaceholder.typicode.com/todos/1");
+io.println(response);

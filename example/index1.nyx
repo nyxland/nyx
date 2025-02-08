@@ -1,0 +1,7 @@
+import io from "nyx-stdlib/io";
+import http from "nyx-stdlib/http";
+
+async def main():
+    io.println("Hello, world!");
+
+await main();

@@ -1,0 +1,3 @@
+import io from "nyx-stdlib/io";
+
+io.println("Hello, world!");
