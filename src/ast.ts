@@ -94,6 +94,11 @@ export interface ImportSpecifier extends ASTNode {
   imported: Identifier;
 }
 
+export interface AwaitExpression extends ASTNode {
+  type: "AwaitExpression";
+  argument: ASTNode;
+}
+
 export function parse(code: string): Program {
   const tokens = tokenize(code);
   const parser = new Parser(tokens);
@@ -172,6 +177,8 @@ class Parser {
           return this.parseReturnStatement();
         case "import":
           return this.parseImportDeclaration();
+        case "await":
+          return this.parseAwaitExpression();
       }
     }
     return this.parseExpressionStatement();
@@ -313,6 +320,9 @@ class Parser {
       this.consume(TokenType.Operator, "Expected ')' after expression.");
       return expression;
     }
+    if (this.match(TokenType.Keyword) && this.previous().value === "await") {
+      return this.parseAwaitExpression();
+    }
     throw new Error("Unexpected token.");
   }
 
@@ -322,6 +332,11 @@ class Parser {
 
   private parseLiteral(): Literal {
     return { type: "Literal", value: this.previous().value };
+  }
+
+  private parseAwaitExpression(): AwaitExpression {
+    const argument = this.parseExpression();
+    return { type: "AwaitExpression", argument };
   }
 }
 
