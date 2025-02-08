@@ -100,6 +100,12 @@ export interface AwaitExpression extends ASTNode {
   argument: ASTNode;
 }
 
+export interface MemberExpression extends ASTNode {
+  type: "MemberExpression";
+  object: ASTNode;
+  property: Identifier;
+}
+
 export function parse(code: string): Program {
   const tokens = tokenize(code);
   const parser = new Parser(tokens);
@@ -328,7 +334,18 @@ class Parser {
 
   private parsePrimary(): ASTNode {
     if (this.match(TokenType.Identifier)) {
-      return this.parseIdentifier();
+      const identifier = this.parseIdentifier();
+      
+      // Handle member expressions (e.g., http.get, io.println)
+      if (this.match(TokenType.Operator) && this.previous().value === ".") {
+        return {
+          type: "MemberExpression",
+          object: identifier,
+          property: this.parseIdentifier()
+        };
+      }
+      
+      return identifier;
     }
     if (this.match(TokenType.Literal)) {
       return this.parseLiteral();

@@ -1,4 +1,6 @@
-import axios from "axios";
+import { io } from "./stdlib/io.js";
+import { http } from "./stdlib/http.js";
+import IModule from "./interfaces/Module.js";
 import {
   parse,
   type Program,
@@ -13,37 +15,19 @@ import {
   type ForStatement,
   type WhileStatement,
   type AwaitExpression,
-} from "./ast";
-import { ParserError } from "./errors";
-
-interface Module {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  [key: string]: any;
-}
-
-const io: Module = {
-  println: (message: any) => {
-    console.log(message);
-  },
-};
-
-const http: Module = {
-  get: async (url: string) => {
-    const response = await axios.get(url);
-    return response.data;
-  },
-};
+} from "./ast.js";
+import { ParserError } from "./errors.js";
 
 class Interpreter {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   [key: string]: any;
-  private modules: { [key: string]: Module } = {
+  private modules: { [key: string]: IModule } = {
     io,
     http,
   };
   private functions: { [key: string]: FunctionDeclaration } = {};
 
-  async interpret(ast: ASTNode) {
+  async interpret(ast: ASTNode): Promise<any> {
     switch (ast.type) {
       case "Program":
         for (const statement of ast.body) {
@@ -80,13 +64,13 @@ class Interpreter {
   handleImportDeclaration(ast: ImportDeclaration) {
     for (const specifier of ast.specifiers) {
       const localName = (specifier.local as Identifier).name;
-      const importedName = (specifier.imported as Identifier).name;
-      const moduleName = importedName.split("/")[0];
+      const source = (ast.source as Literal).value;
+      const moduleName = source.split("/")[1]; // Get 'io' or 'http' from 'nyx-stdlib/io'
       const module = this.modules[moduleName];
       if (!module) {
         throw new Error(`Module not found: ${moduleName}`);
       }
-      this[localName] = module[importedName.split("/")[1]];
+      this[localName] = module;
     }
   }
 
@@ -95,24 +79,30 @@ class Interpreter {
     this.functions[functionName] = ast;
   }
 
-  async handleCallExpression(ast: CallExpression) {
-    const callee = (ast.callee as Identifier).name;
-  
-    if (this.functions[callee]) {
-      return await this.executeFunction(this.functions[callee], ast.arguments);
-    } else if (callee.includes(".") && this.modules[callee.split(".")[0]]) {
-      const moduleName = callee.split(".")[0];
-      const functionName = callee.split(".")[1];
-      const module = this.modules[moduleName];
-      if (module && module[functionName]) {
-        const args = await Promise.all(ast.arguments.map((arg) => this.evaluate(arg)));
-        return await module[functionName](...args);
-      }
-    } else if (this[callee]) {
-      return await this[callee](...await Promise.all(ast.arguments.map((arg) => this.evaluate(arg))));
-    } else {
-      throw new Error(`Unknown function: ${callee}`);
+  async handleCallExpression(ast: CallExpression): Promise<any> {
+    const callee = ast.callee as any;
+    
+    if (callee.type === "Identifier" && this.functions[callee.name]) {
+      return await this.executeFunction(this.functions[callee.name], ast.arguments);
     }
+    
+    // Handle module function calls (e.g., http.get, io.println)
+    if (callee.type === "MemberExpression") {
+      const obj = await this.evaluate(callee.object);
+      const prop = callee.property.name;
+      if (obj && typeof obj[prop] === "function") {
+        const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
+        return await obj[prop].apply(obj, args);
+      }
+    }
+
+    // Handle direct function calls
+    if (callee.type === "Identifier" && this[callee.name]) {
+      const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
+      return await this[callee.name].apply(this, args);
+    }
+
+    throw new Error(`Unknown function: ${JSON.stringify(callee)}`);
   }
 
   handleVariableDeclaration(ast: VariableDeclaration) {
@@ -147,23 +137,28 @@ class Interpreter {
     }
   }
 
-  async handleAwaitExpression(ast: AwaitExpression) {
+  async handleAwaitExpression(ast: AwaitExpression): Promise<any> {
     return await this.evaluate(ast.argument);
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async evaluate(node: ASTNode): Promise<any> {
+    if (!node) return undefined;
+    
     switch (node.type) {
       case "Literal":
         return node.value;
       case "Identifier":
         return this[node.name];
+      case "MemberExpression":
+        const obj = await this.evaluate(node.object);
+        return obj[node.property.name];
       case "BinaryExpression":
         return this.evaluateBinaryExpression(node);
       case "CallExpression":
-        return this.handleCallExpression(node as CallExpression);
+        return await this.handleCallExpression(node as CallExpression);
       case "AwaitExpression":
-        return this.handleAwaitExpression(node as AwaitExpression);
+        return await this.handleAwaitExpression(node as AwaitExpression);
       default:
         throw new Error(`Unknown AST node type: ${node.type}`);
     }
@@ -187,7 +182,7 @@ class Interpreter {
     }
   }
 
-  async executeFunction(func: FunctionDeclaration, args: ASTNode[]) {
+  async executeFunction(func: FunctionDeclaration, args: ASTNode[]): Promise<any> {
     const params = func.params.map((param) => (param as Identifier).name);
     const localScope: { [key: string]: any } = {};
     for (let i = 0; i < params.length; i++) {
@@ -195,16 +190,20 @@ class Interpreter {
     }
     const previousScope = { ...this };
     Object.assign(this, localScope);
-    await this.interpret(func.body);
+    const result: any = await this.interpret(func.body);
     Object.assign(this, previousScope);
+    return result;
   }
 }
 
 export async function interpret(code: string) {
   try {
+    const now = new Date();
     const ast: Program = parse(code);
     const interpreter = new Interpreter();
-    await interpreter.interpret(ast);
+    await interpreter.interpret(ast).then(() => {
+      console.log(`Execution time: ${new Date().getTime() - now.getTime()}ms`);
+    });
   } catch (error) {
     if (error instanceof ParserError) {
       console.error(error.toString());

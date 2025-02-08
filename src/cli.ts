@@ -3,7 +3,7 @@
 import { Command } from "commander";
 import { readFileSync } from "node:fs";
 import process from "node:process";
-import { interpret } from "./interpreter";
+import { interpret } from "./interpreter.js";
 
 async function main() {
   const program = new Command();
