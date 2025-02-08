@@ -114,9 +114,7 @@ export class Tokenizer {
   }
 
   private error(message: string): never {
-    throw new Error(
-      `Tokenizer error at ${this.line}:${this.column} - ${message}`,
-    );
+    throw new ParserError(this.line, this.column, this.peek(), message);
   }
 
   public tokenize(): Token[] {
