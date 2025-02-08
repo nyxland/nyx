@@ -1,4 +1,5 @@
 import { Token, Tokenizer, TokenType } from "./tokenizer.js";
+import { ParserError } from "./errors.js";
 
 export interface ASTNode {
   type: string;
@@ -340,7 +341,8 @@ class Parser {
     if (this.match(TokenType.Keyword) && this.previous().value === "await") {
       return this.parseAwaitExpression();
     }
-    throw new Error("Unexpected token.");
+    const token = this.peek();
+    throw new ParserError(token.line, token.column, token.value, "Unexpected token.");
   }
 
   private parseIdentifier(): Identifier {

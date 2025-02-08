@@ -14,6 +14,7 @@ import {
   type WhileStatement,
   type AwaitExpression,
 } from "./ast";
+import { ParserError } from "./errors";
 
 interface Module {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -193,9 +194,17 @@ class Interpreter {
 }
 
 export function interpret(code: string) {
-  const ast: Program = parse(code);
-  const interpreter = new Interpreter();
-  console.log(ast);
-  console.log(interpreter.interpret(ast));
-  interpreter.interpret(ast);
+  try {
+    const ast: Program = parse(code);
+    const interpreter = new Interpreter();
+    console.log(ast);
+    console.log(interpreter.interpret(ast));
+    interpreter.interpret(ast);
+  } catch (error) {
+    if (error instanceof ParserError) {
+      console.error(error.toString());
+    } else {
+      console.error(error);
+    }
+  }
 }
