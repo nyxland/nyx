@@ -5,4 +5,4 @@ async def main():
     response = await http.get("https://jsonplaceholder.typicode.com/todos/1")
     io.println(response.data)
 
-await main()
+await main();

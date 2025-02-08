@@ -164,6 +164,8 @@ class Parser {
       switch (this.previous().value) {
         case "def":
           return this.parseFunctionDeclaration();
+        case "async":
+          return this.parseAsyncFunctionDeclaration();
         case "let":
         case "const":
           return this.parseVariableDeclaration();
@@ -196,6 +198,21 @@ class Parser {
     this.consume(TokenType.Operator, "Expected ')' after parameters.");
     const body = this.parseBlockStatement();
     return { type: "FunctionDeclaration", id, params, body, async: false };
+  }
+
+  private parseAsyncFunctionDeclaration(): FunctionDeclaration {
+    this.consume(TokenType.Keyword, "Expected 'def' after 'async'.");
+    const id = this.parseIdentifier();
+    this.consume(TokenType.Operator, "Expected '(' after function name.");
+    const params: Identifier[] = [];
+    if (!this.check(TokenType.Operator) || this.peek().value !== ")") {
+      do {
+        params.push(this.parseIdentifier());
+      } while (this.match(TokenType.Operator) && this.previous().value === ",");
+    }
+    this.consume(TokenType.Operator, "Expected ')' after parameters.");
+    const body = this.parseBlockStatement();
+    return { type: "FunctionDeclaration", id, params, body, async: true };
   }
 
   private parseVariableDeclaration(): VariableDeclaration {
