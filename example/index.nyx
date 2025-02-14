@@ -1,8 +1,8 @@
-import io from "nyx-stdlib/io";
-import http from "nyx-stdlib/http";
+import io from "nyx-stdlib/io"
+import http from "nyx-stdlib/http"
 
 async def main():
-    response = await http.get("https://jsonplaceholder.typicode.com/todos/1");
-    io.println(response);
+    response = await http.get("https://jsonplaceholder.typicode.com/todos/1")
+    io.println(response)
 
-await main();
+await main()
