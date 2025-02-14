@@ -291,7 +291,7 @@ class Parser {
     if (this.match(TokenType.Keyword) && this.previous().value === "from") {
       source = this.parseLiteral();
     }
-    this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
+    // this.consume(TokenType.Punctuation, "Expected ';' after import declaration.");
     return { type: "ImportDeclaration", specifiers, source };
   }
 
@@ -307,7 +307,7 @@ class Parser {
 
   private parseExpressionStatement(): ASTNode {
     const expression = this.parseExpression();
-    this.consume(TokenType.Punctuation, "Expected ';' after expression.");
+    // this.consume(TokenType.Punctuation, "Expected ';' after expression.");
     return { type: "ExpressionStatement", expression };
   }
 
