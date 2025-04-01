@@ -235,7 +235,10 @@ class Parser {
       }
       declarations.push({ type: "VariableDeclarator", id, init });
     } while (this.match(TokenType.Operator) && this.previous().value === ",");
-    this.consume(TokenType.Punctuation, "Expected ';' after variable declaration.");
+    this.consume(
+      TokenType.Punctuation,
+      "Expected ';' after variable declaration.",
+    );
     return { type: "VariableDeclaration", declarations, kind };
   }
 
@@ -337,16 +340,16 @@ class Parser {
   private parsePrimary(): ASTNode {
     if (this.match(TokenType.Identifier)) {
       const identifier = this.parseIdentifier();
-      
+
       // Handle member expressions (e.g., http.get, io.println)
       if (this.match(TokenType.Operator) && this.previous().value === ".") {
         return {
           type: "MemberExpression",
           object: identifier,
-          property: this.parseIdentifier()
+          property: this.parseIdentifier(),
         };
       }
-      
+
       return identifier;
     }
     if (this.match(TokenType.Literal)) {
@@ -361,7 +364,12 @@ class Parser {
       return this.parseAwaitExpression();
     }
     const token = this.peek();
-    throw new ParserError(token.line, token.column, token.value, "Unexpected token.");
+    throw new ParserError(
+      token.line,
+      token.column,
+      token.value,
+      "Unexpected token.",
+    );
   }
 
   private parseIdentifier(): Identifier {

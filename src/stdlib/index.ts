@@ -1,5 +1,5 @@
-import { http } from './http.js';
-import { io } from './io.js';
+import { http } from "./http.js";
+import { io } from "./io.js";
 
 export const stdlib = {
   http,
