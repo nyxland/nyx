@@ -78,7 +78,8 @@ class Interpreter {
         throw new Error(`Module not found: ${moduleName}`);
       }
       this[localName] = module;
-      if (this.debug) console.log(`Imported module '${moduleName}' as '${localName}'`);
+      if (this.debug)
+        console.log(`Imported module '${moduleName}' as '${localName}'`);
     }
   }
 
@@ -93,7 +94,10 @@ class Interpreter {
     const callee = ast.callee as any;
 
     if (callee.type === "Identifier" && this.functions[callee.name]) {
-      return await this.executeFunction(this.functions[callee.name], ast.arguments);
+      return await this.executeFunction(
+        this.functions[callee.name],
+        ast.arguments,
+      );
     }
 
     // Handle module function calls (e.g., http.get, io.println)
@@ -101,16 +105,22 @@ class Interpreter {
       const obj = await this.evaluate(callee.object);
       const prop = callee.property.name;
       if (obj && typeof obj[prop] === "function") {
-        const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
-        if (this.debug) console.log(`Calling function '${prop}' on module`, obj);
+        const args = await Promise.all(
+          ast.arguments.map((arg) => this.evaluate(arg)),
+        );
+        if (this.debug)
+          console.log(`Calling function '${prop}' on module`, obj);
         return await obj[prop].apply(obj, args);
       }
     }
 
     // Handle direct function calls
     if (callee.type === "Identifier" && this[callee.name]) {
-      const args = await Promise.all(ast.arguments.map(arg => this.evaluate(arg)));
-      if (this.debug) console.log(`Calling function '${callee.name}' with arguments`, args);
+      const args = await Promise.all(
+        ast.arguments.map((arg) => this.evaluate(arg)),
+      );
+      if (this.debug)
+        console.log(`Calling function '${callee.name}' with arguments`, args);
       return await this[callee.name].apply(this, args);
     }
 
@@ -121,7 +131,9 @@ class Interpreter {
     if (this.debug) console.log("Handling Variable Declaration:", ast);
     for (const declaration of ast.declarations) {
       const varName = (declaration.id as Identifier).name;
-      this[varName] = declaration.init ? this.evaluate(declaration.init) : undefined;
+      this[varName] = declaration.init
+        ? this.evaluate(declaration.init)
+        : undefined;
     }
   }
 
@@ -201,7 +213,10 @@ class Interpreter {
     }
   }
 
-  async executeFunction(func: FunctionDeclaration, args: ASTNode[]): Promise<any> {
+  async executeFunction(
+    func: FunctionDeclaration,
+    args: ASTNode[],
+  ): Promise<any> {
     if (this.debug) console.log("Executing Function:", func);
     const params = func.params.map((param) => (param as Identifier).name);
     const localScope: { [key: string]: any } = {};

@@ -3,7 +3,12 @@ export class ParserError extends Error {
   column: number;
   unexpectedToken: string;
 
-  constructor(line: number, column: number, unexpectedToken: string, message: string) {
+  constructor(
+    line: number,
+    column: number,
+    unexpectedToken: string,
+    message: string,
+  ) {
     super(message);
     this.line = line;
     this.column = column;
